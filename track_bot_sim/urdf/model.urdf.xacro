@@ -40,7 +40,7 @@
             <xacro:body_origin/>
         </xacro:inertial_box>
     </xacro:macro>
-<!-- ***** Body Setup End***** -->
+<!-- ***** Body Setup End ***** -->
 
 <!-- ***** Wheel Setup ***** -->
     <xacro:property name="wheel_origin_x" value="0.8"/>
@@ -50,7 +50,7 @@
     <xacro:property name="wheel_radius" value="0.5"/>
     <xacro:property name="wheel_length" value="0.25"/>
 
-    <xacro:property name="wheel_mass" value="0.25"/>
+    <xacro:property name="wheel_mass" value="5"/>
 
     <xacro:macro name="wheel_shape">
         <geometry>
@@ -83,6 +83,7 @@
 
     <link name="base_link"></link>
 
+<!-- ***** Body Parts ***** -->
     <joint name="body_joint" type="fixed">
         <xacro:body_origin/>
         <parent link="base_link"/>
@@ -92,7 +93,9 @@
     <link name="body_link">
         <xacro:body_link/>
     </link>
+<!-- ***** Body Parts End ***** -->
 
+<!-- ***** Wheel Parts ***** -->
     <joint name="FR_wheel_joint" type="continuous">
         <parent link="body_link"/>
         <child link="FR_wheel_link"/>
@@ -136,6 +139,41 @@
     <link name="RL_wheel_link">
         <xacro:wheel_link/>
     </link>
+<!-- ***** Wheel Parts End ***** -->
+
+<!-- ***** Camera Parts ***** -->
+    <joint name="camera_joint" type="fixed">
+        <origin xyz="0 0 2" rpy="0 0 0"/>
+        <parent link="body_link"/>
+        <child link="camera_link"/>        
+    </joint>
+
+    <link name="camera_link">
+        <visual>
+            <origin xyz="-0.03 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.06 0.15 0.15" />
+            </geometry>
+            <material name="white" />
+        </visual>
+        <visual>
+            <origin xyz="0.03 0 0" rpy="0 ${pi/2} 0"/>
+            <geometry>
+                <cylinder length="0.06" radius="0.04" />
+            </geometry>
+            <material name="blue" />
+        </visual>
+        <collision>
+            <origin xyz="0.0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.12 0.15 0.15" />
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.1" x="0.12" y="0.15" z="0.15">
+            <origin xyz="0.0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+<!-- ***** Camera Parts End***** -->
 
     <xacro:include filename="gazebo.xacro"/>
 </robot>

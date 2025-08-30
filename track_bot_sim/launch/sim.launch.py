@@ -9,21 +9,26 @@ import xacro
 
 
 def generate_launch_description():
-    # Specify the name of the package and path to xacro file within the package
     pkg_name = 'track_bot_sim'
     file_subpath = 'urdf/model.urdf.xacro'
 
-    # Use xacro to process the file
     xacro_file = os.path.join(get_package_share_directory(pkg_name),file_subpath)
     robot_description_raw = xacro.process_file(xacro_file).toxml()
 
-    # Configure the node
+    rviz_file = os.path.join(get_package_share_directory(pkg_name), 'rviz', 'track_bot.rviz')
+
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster"],
+    )
+
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         output='screen',
         parameters=[{'robot_description': robot_description_raw,
-        'use_sim_time': True}] # add other parameters here if required
+        'use_sim_time': True}]
     )
 
     gazebo = IncludeLaunchDescription(
@@ -36,9 +41,19 @@ def generate_launch_description():
                                 '-entity', 'track_bot'],
                     output='screen')
 
-    # Run the node
+    rviz2 = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', rviz_file],
+        parameters=[{'use_sim_time': True}]
+    )
+
     return LaunchDescription([
         gazebo,
         node_robot_state_publisher,
+        joint_state_broadcaster_spawner,
         spawn_entity,
+        rviz2
     ])

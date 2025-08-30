@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, termios, tty, select
+import os, sys, termios, tty, select
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray
@@ -8,10 +8,9 @@ from std_msgs.msg import Float64MultiArray
 HELP = """
 w : 전진
 s : 후진
-r : 정지
+
 q : 종료
 """
-
 class KeyReader:
     def __init__(self):
         self.stream = None
@@ -43,11 +42,19 @@ class KeyReader:
 
     def getKey(self, timeout=0.05):
         tty.setraw(self.fd)
-        r, _, _ = select.select([self.fd], [], [], timeout)
-        ch = self.stream.read(1).decode() if r else ''
-        termios.tcsetattr(self.fd, termios.TCSADRAIN, self.old)
-        return ch
-
+        try:
+            r, _, _ = select.select([self.fd], [], [], timeout)
+            ch = ''
+            if r:
+                try:
+                    b = os.read(self.fd, 1)
+                    ch = b.decode(errors='ignore')
+                except Exception:
+                    data = self.stream.read(1)
+                    ch = data if isinstance(data, str) else data.decode(errors='ignore')
+            return ch
+        finally:
+            termios.tcsetattr(self.fd, termios.TCSADRAIN, self.old)
 
 class WheelTeleop(Node):
     def __init__(self, key_reader: KeyReader):
@@ -55,7 +62,7 @@ class WheelTeleop(Node):
         # 컨트롤러 토픽: <controller_name>/commands
         self.pub = self.create_publisher(Float64MultiArray, '/wheel_control/commands', 10)
 
-        self.v = 0.0
+        self.v = 3.0
         self.get_logger().info(HELP)
 
         self.kr = key_reader
@@ -64,38 +71,30 @@ class WheelTeleop(Node):
     def clamp(self, x, lo, hi):
         return max(min(x, hi), lo)
 
-    def publish_velocity(self):
-        msg = Float64MultiArray()
-        # 모든 구동바퀴 동일 속도
-        msg.data = [self.v] * 4
-        self.pub.publish(msg)
-
     def loop(self):
         key = self.kr.getKey(0.05)
+        msg = Float64MultiArray()
+        msg.data = [0.0] * 4
 
         if key == 'w':
-            self.v = 3.0
-            self.get_logger().info(f'vel = {self.v:.2f}')
+            msg.data = [self.v, self.v, self.v, self.v]
+            # self.get_logger().info(f'vel = {self.v:.2f}')
         elif key == 's':
-            self.v = -3.0
-            self.get_logger().info(f'vel = {self.v:.2f}')
+            msg.data = [-self.v, -self.v, -self.v, -self.v]
+        elif key == 'a':
+            msg.data = [self.v, -self.v, self.v, -self.v]
+        elif key == 'd':
+            msg.data = [-self.v, self.v, -self.v, self.v]
         elif key == '':
-            # 키 입력 없을 때 정지 유지 (원래 로직 유지)
-            self.v = 0.0
-        elif key == 'r':
-            self.v = 0.0
-            self.get_logger().info('STOP')
-            self.publish_velocity()
+            msg.data = [0.0, 0.0, 0.0, 0.0]
         elif key == 'q':
-            # 안전하게 정지 한번 전송 후 종료
-            self.v = 0.0
-            self.publish_velocity()
+            msg.data = [0.0, 0.0, 0.0, 0.0]
+            self.pub.publish(msg)
             self.get_logger().info('quit')
             rclpy.shutdown()
             return
 
-        self.publish_velocity()
-
+        self.pub.publish(msg)
 
 def main():
     rclpy.init()
