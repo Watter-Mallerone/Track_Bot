@@ -62,7 +62,7 @@ class WheelTeleop(Node):
         # 컨트롤러 토픽: <controller_name>/commands
         self.pub = self.create_publisher(Float64MultiArray, '/wheel_control/commands', 10)
 
-        self.v = 3.0
+        self.v = 5.0
         self.get_logger().info(HELP)
 
         self.kr = key_reader
