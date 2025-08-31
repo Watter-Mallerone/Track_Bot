@@ -50,10 +50,18 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}]
     )
 
+    odometry_publisher = Node(
+        package='track_bot_sim',
+        executable='odom_pub',
+        output='screen',
+        parameters=[],
+    )
+
     return LaunchDescription([
         gazebo,
         node_robot_state_publisher,
         joint_state_broadcaster_spawner,
         spawn_entity,
+        odometry_publisher,
         rviz2
     ])
