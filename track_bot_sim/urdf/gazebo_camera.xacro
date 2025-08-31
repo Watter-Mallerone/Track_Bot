@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<!-- ***** Camera Parts ***** -->
+    <xacro:macro name="create_camera" params="size_x size_y size_z *origin">
+        <joint name="camera_joint" type="fixed">
+            <xacro:insert_block name="origin"/>
+            <parent link="body_link"/>
+            <child link="camera_link"/>        
+        </joint>
+
+        <link name="camera_link">
+            <visual>
+                <origin xyz="${size_x/2} 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="${size_x} ${size_y} ${size_z}"/>
+                </geometry>
+                <material name="red"/>
+            </visual>
+
+            <collision>
+                <origin xyz="${size_x/2} 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="${size_x} ${size_y} ${size_z}"/>
+                </geometry>
+            </collision>
+
+            <xacro:inertial_box mass="0.1" x="${size_x}" y="${size_y}" z="${size_z}">
+                <origin xyz="${size_x/2} 0 0" rpy="0 0 0"/>
+            </xacro:inertial_box>
+        </link>
+<!-- ***** Camera Parts End***** -->
+
+<!-- ***** Camera Optical Parts ***** -->
+        <joint name="camera_sensor_joint" type="fixed">
+            <origin xyz="${size_x} 0 0" rpy="0 0 0"/>
+            <parent link="camera_link"/>
+            <child link="camera_sensor_link"/>
+        </joint>
+
+        <link name="camera_sensor_link">
+            <visual>
+                <origin xyz="0.03 0 0" rpy="0 ${pi/2} 0"/>
+                <geometry>
+                    <cylinder length="0.06" radius="0.04"/>
+                </geometry>
+                <material name="red"/>
+            </visual>
+        </link>
+
+        <gazebo reference="camera_sensor_link">
+            <sensor type="camera" name="camera_sensor">
+                <update_rate>20</update_rate>
+                <visualize>true</visualize>
+                <camera name="cam">
+                    <horizontal_fov>1.3962634</horizontal_fov>
+                    <image>
+                        <width>640</width>
+                        <height>480</height>
+                        <format>R8B8G8</format>
+                    </image>
+                    <clip>
+                        <near>0.02</near>
+                        <far>300</far>
+                    </clip>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.007</stddev>
+                    </noise>
+                </camera>
+                <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                    <frame_name>camera_sensor_link</frame_name>
+                    <min_depth>0.1</min_depth>
+                    <max_depth>500</max_depth>
+                </plugin>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+<!-- ***** Camera Optical Parts End ***** -->
+
+</robot>
