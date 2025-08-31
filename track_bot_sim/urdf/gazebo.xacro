@@ -17,13 +17,13 @@
                     <near>0.02</near>
                     <far>300</far>
                 </clip>
-                <noise>
+                <!-- <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>
                     <stddev>0.007</stddev>
-                </noise>
+                </noise> -->
             </camera>
-            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+            <plugin name="camera_sensor" filename="libgazebo_ros_camera.so">
                 <frame_name>camera_optical_link</frame_name>
                 <min_depth>0.1</min_depth>
                 <max_depth>500</max_depth>
@@ -42,16 +42,21 @@
                 <scan>
                     <horizontal>
                         <samples>360</samples>
-                        <min_angle>-3.14</min_angle>
-                        <max_angle>3.14</max_angle>
+                        <min_angle>-${pi}</min_angle>
+                        <max_angle>${pi}</max_angle>
                     </horizontal>
                 </scan>
                 <range>
                     <min>0.3</min>
                     <max>12</max>
                 </range>
+                <!-- <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                </noise> -->
             </ray>
-            <plugin name="laser_controller" filename="libgazebo_ros_ray_sensor.so">
+            <plugin name="lidar_sensor" filename="libgazebo_ros_ray_sensor.so">
                 <ros>
                     <argument>~/out:=scan</argument>
                 </ros>
@@ -61,6 +66,48 @@
         </sensor>
     </gazebo>
 <!-- ***** Lidar Plugin End ***** -->
+
+<!-- ***** Ultrasoni Sensor Plugin ***** -->
+    <gazebo reference="ultrasonic_link">
+        <sensor name="ultrasonic" type="ray">
+            <pose> 0 0 0 0 0 0 </pose>
+            <visualize>true</visualize>
+            <update_rate>10</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>5</samples>
+                        <resolution>1.000000</resolution>
+                        <min_angle>-0.12</min_angle>
+                        <max_angle>0.12</max_angle>
+                    </horizontal>
+                    <vertical>
+                        <samples>5</samples>
+                        <resolution>1.000000</resolution>
+                        <min_angle>-0.01</min_angle>
+                        <max_angle>0.01</max_angle>
+                    </vertical>
+                </scan>
+                <range>
+                    <min>0.01</min>
+                    <max>4</max>
+                </range>
+                <!-- <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                </noise> -->
+            </ray>
+            <plugin name="ultrasonic_sensor" filename="libgazebo_ros_ray_sensor.so">
+                <ros>
+                    <argument>~/out:=ultrasonic_sensor</argument>
+                </ros>
+                <output_type>sensor_msgs/LaserScan</output_type>
+                <frame_name>ultrasonic_link</frame_name>
+            </plugin>
+        </sensor>
+    </gazebo>
+<!-- ***** Ultrasoni Sensor Plugin End ***** -->
 
 <!-- ***** Gazebo Plugins ***** -->
     <gazebo>
@@ -83,31 +130,39 @@
     </hardware>
 
     <joint name="FR_wheel_joint">
-        <!-- <command_interface name="velocity">
-            <param name="max">10</param>
-            <param name="min">-10</param>
-        </command_interface> -->
         <state_interface name="velocity"/>
         <state_interface name="position"/>
-        <command_interface name="velocity"/>
+        <command_interface name="velocity">
+            <param name="max">1</param>
+            <param name="min">-1</param>
+        </command_interface>
     </joint>
 
     <joint name="FL_wheel_joint">
         <state_interface name="velocity"/>
         <state_interface name="position"/>
-        <command_interface name="velocity"/>
+        <command_interface name="velocity">
+            <param name="max">1</param>
+            <param name="min">-1</param>
+        </command_interface>
     </joint>
 
     <joint name="RR_wheel_joint">
         <state_interface name="velocity"/>
         <state_interface name="position"/>
-        <command_interface name="velocity"/>
+        <command_interface name="velocity">
+            <param name="max">1</param>
+            <param name="min">-1</param>
+        </command_interface>
     </joint>
 
     <joint name="RL_wheel_joint">
         <state_interface name="velocity"/>
         <state_interface name="position"/>
-        <command_interface name="velocity"/>
+        <command_interface name="velocity">
+            <param name="max">1</param>
+            <param name="min">-1</param>
+        </command_interface>
     </joint>
     </ros2_control>
 <!-- ***** Gazebo Control End ***** -->
@@ -115,11 +170,13 @@
 <!-- ***** Wheel Setup ***** -->
     <xacro:macro name="wheel_setup">
         <material>Gazebo/Blue</material>
+
         <mu1>1</mu1>
         <mu2>1</mu2>
+
         <!-- <slip1>0.0</slip1>
         <slip2>0.0</slip2>
-        <kp>1e6</kp>
+        <kp>10000000.0</kp>
         <kd>1.0</kd>
         <maxVel>0.1</maxVel>
         <minDepth>0.001</minDepth> -->

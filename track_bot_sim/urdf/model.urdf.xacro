@@ -44,7 +44,7 @@
 
 <!-- ***** Wheel Setup ***** -->
     <xacro:property name="wheel_origin_x" value="0.8"/>
-    <xacro:property name="wheel_origin_y" value="0.75"/>
+    <xacro:property name="wheel_origin_y" value="0.5"/>
     <xacro:property name="wheel_origin_z" value="-0.5"/>
 
     <xacro:property name="wheel_radius" value="0.25"/>
@@ -193,7 +193,8 @@
         <parent link="body_link"/>
         <child link="FR_wheel_link"/>
         <origin xyz="${wheel_origin_x} -${wheel_origin_y} ${wheel_origin_z}" rpy="${pi/2} 0 0"/>
-        <xacro:wheel_axis/>
+        <axis xyz="0 0 -1"/>
+        <dynamics damping="1.0" friction="1.0"/>
     </joint>
 
     <link name="FR_wheel_link">
@@ -204,7 +205,8 @@
         <parent link="body_link"/>
         <child link="FL_wheel_link"/>
         <origin xyz="${wheel_origin_x} ${wheel_origin_y} ${wheel_origin_z}" rpy="-${pi/2} 0 0"/>
-        <xacro:wheel_axis/>
+        <axis xyz="0 0 1"/>
+        <dynamics damping="1.0" friction="1.0"/>
     </joint>
 
     <link name="FL_wheel_link">
@@ -215,7 +217,8 @@
         <parent link="body_link"/>
         <child link="RR_wheel_link"/>
         <origin xyz="-${wheel_origin_x} -${wheel_origin_y} ${wheel_origin_z}" rpy="${pi/2} 0 0"/>
-        <xacro:wheel_axis/>
+        <axis xyz="0 0 -1"/>
+        <dynamics damping="1.0" friction="1.0"/>
     </joint>
 
     <link name="RR_wheel_link">
@@ -226,7 +229,8 @@
         <parent link="body_link"/>
         <child link="RL_wheel_link"/>
         <origin xyz="-${wheel_origin_x} ${wheel_origin_y} ${wheel_origin_z}" rpy="-${pi/2} 0 0"/>
-        <xacro:wheel_axis/>
+        <axis xyz="0 0 1"/>
+        <dynamics damping="1.0" friction="1.0"/>
     </joint>
 
     <link name="RL_wheel_link">
@@ -286,9 +290,9 @@
 
 <!-- ***** Lidar Parts ***** -->
     <joint name="lidar_joint" type="fixed">
+        <xacro:lidar_origin/>
         <parent link="body_link"/>
         <child link="lidar_link"/>
-        <xacro:lidar_origin/>
     </joint>
 
     <link name="lidar_link">
@@ -323,6 +327,22 @@
         </xacro:inertial_cylinder>
     </link>
 <!-- ***** Lidar Parts End ***** -->
+
+<!-- ***** Ultrasoni Sensor Parts ***** -->
+    <joint name="ultrasonic_joint" type="fixed">
+        <origin xyz="1.5 0 0" rpy="0 0 0"/>
+        <parent link="body_link"/>
+        <child link="ultrasonic_link"/>        
+    </joint>
+
+    <link name="ultrasonic_link">
+        <visual>
+            <geometry>
+                <box size="0.05 0.2 0.1"/>
+            </geometry>
+        </visual>
+    </link>
+<!-- ***** Ultrasoni Sensor Parts End ***** -->
 
     <xacro:include filename="gazebo.xacro"/>
 

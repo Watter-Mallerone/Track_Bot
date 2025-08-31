@@ -68,6 +68,8 @@ Visualization Manager:
           Value: true
         camera_link:
           Value: true
+        camera_optical_link:
+          Value: true
         camera_sensor_link:
           Value: true
         lidar_link:
@@ -92,7 +94,8 @@ Visualization Manager:
               {}
             camera_link:
               camera_sensor_link:
-                {}
+                camera_optical_link:
+                  {}
             lidar_link:
               lidar_sensor_link:
                 {}
@@ -150,6 +153,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        camera_optical_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         camera_sensor_link:
           Alpha: 1
           Show Axes: false
@@ -236,9 +243,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 0
+      Max Intensity: -999999
       Min Color: 0; 0; 0
-      Min Intensity: 0
+      Min Intensity: 999999
       Name: LaserScan
       Position Transformer: XYZ
       Selectable: true
@@ -301,25 +308,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 6.624574661254883
+      Distance: 7.887996673583984
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.821561813354492
-        Y: -0.4699952304363251
-        Z: 0.5794352889060974
+        X: 2.446199893951416
+        Y: -0.2588871717453003
+        Z: 0.13711017370224
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.47039809823036194
+      Pitch: 0.5703980326652527
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.489044666290283
+      Yaw: 4.004045009613037
     Saved: ~
 Window Geometry:
   Displays:
@@ -340,4 +347,4 @@ Window Geometry:
     collapsed: true
   Width: 1410
   X: 1150
-  Y: 197
+  Y: 196
