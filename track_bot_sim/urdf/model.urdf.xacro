@@ -152,7 +152,7 @@
     </xacro:macro>
 
     <xacro:macro name="lidar_sensor_offset_origin">
-        <origin xyz="0 0 ${lidar_sensor_length/2}" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
     </xacro:macro>
 
     <xacro:macro name="lidar_shape">
@@ -309,7 +309,7 @@
     </link>
 
     <joint name="lidar_sensor_joint" type="fixed">
-        <origin xyz="0 0 ${lidar_length}" rpy="0 0 0"/>
+        <origin xyz="0 0 ${lidar_length+lidar_sensor_length/2}" rpy="0 0 0"/>
         <parent link="lidar_link"/>
         <child link="lidar_sensor_link"/>
     </joint>
